@@ -1,0 +1,1229 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>El Arquitecto · Filtro institucional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* =============================================================================
+   TOKENS
+   ============================================================================= */
+:root {
+  --ink:        #0a0b0e;
+  --surface:    #131418;
+  --surface-2:  #1a1b21;
+  --hairline:   #2a2b32;
+  --rule:       #3a3b42;
+  --text:       #ebe9e4;
+  --muted:      #87847d;
+  --dim:        #56544f;
+  --gold:       #c9a558;
+  --gold-bright:#e6c976;
+  --gold-soft:  #6b5832;
+  --ember:      #c54848;
+  --moss:       #6a8a5e;
+
+  --serif: "Fraunces", "Georgia", serif;
+  --mono:  "JetBrains Mono", "SF Mono", "Menlo", monospace;
+
+  --shadow-1: 0 1px 0 rgba(255,255,255,0.02), 0 10px 24px -16px rgba(0,0,0,0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  background-image:
+    radial-gradient(1200px 600px at 50% -200px, rgba(201,165,88,0.06), transparent 70%),
+    linear-gradient(180deg, var(--ink) 0%, #07080a 100%);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hairline grain overlay */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,0.01) 3px 4px);
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: overlay;
+}
+
+::selection { background: var(--gold); color: var(--ink); }
+
+/* =============================================================================
+   LAYOUT
+   ============================================================================= */
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 28px 22px 80px;
+}
+
+@media (min-width: 720px) {
+  .wrap { padding: 56px 40px 96px; }
+}
+
+/* =============================================================================
+   HEADER
+   ============================================================================= */
+.brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 22px;
+}
+
+.brand-mark {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(28px, 6vw, 44px);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: var(--text);
+}
+.brand-mark em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 400;
+}
+
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.tagline {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 56ch;
+  margin-bottom: 32px;
+}
+.tagline cite {
+  display: block;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  color: var(--dim);
+}
+
+/* =============================================================================
+   STATUS PILL
+   ============================================================================= */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 11px 6px 9px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface);
+}
+.status-pill .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 0 rgba(201,165,88,0.6);
+  animation: pulse 2.4s ease-out infinite;
+}
+.status-pill.scanning .dot {
+  background: var(--gold-bright);
+  animation: pulse 1s ease-out infinite;
+}
+.status-pill.error .dot {
+  background: var(--ember);
+  animation: none;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(201,165,88,0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(201,165,88,0);    }
+  100% { box-shadow: 0 0 0 0   rgba(201,165,88,0);    }
+}
+
+/* =============================================================================
+   VITALS GRID
+   ============================================================================= */
+.vitals {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-bottom: 36px;
+}
+@media (min-width: 600px) {
+  .vitals { grid-template-columns: repeat(4, 1fr); }
+}
+
+.vital {
+  background: var(--surface);
+  padding: 18px 16px 16px;
+}
+.vital-label {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.vital-value {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.vital-value.accent { color: var(--gold); }
+.vital-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* =============================================================================
+   ACTIONS
+   ============================================================================= */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 44px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  padding: 11px 18px;
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(.2,.7,.2,1);
+}
+.btn:hover:not(:disabled) {
+  background: var(--gold-bright);
+  border-color: var(--gold-bright);
+  transform: translateY(-1px);
+}
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--surface-2);
+  color: var(--muted);
+  border-color: var(--hairline);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--hairline);
+}
+.btn.ghost:hover:not(:disabled) {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--rule);
+  transform: none;
+}
+
+.btn.danger {
+  background: transparent;
+  color: var(--ember);
+  border-color: var(--hairline);
+  padding: 6px 10px;
+  font-size: 10px;
+}
+.btn.danger:hover:not(:disabled) {
+  background: rgba(197,72,72,0.08);
+  border-color: var(--ember);
+  transform: none;
+}
+
+.action-hint {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* =============================================================================
+   SECTION HEADINGS
+   ============================================================================= */
+.section { margin-bottom: 48px; }
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  gap: 12px;
+}
+.section-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(26px, 5vw, 34px);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  color: var(--text);
+}
+.section-title em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 400;
+}
+.section-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.section-rule {
+  height: 1px;
+  background: var(--rule);
+  margin: 10px 0 22px;
+}
+
+/* =============================================================================
+   OPPORTUNITY CARD
+   ============================================================================= */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: 22px 22px 20px;
+  margin-bottom: 14px;
+  position: relative;
+  transition: border-color 220ms ease;
+}
+.card:hover { border-color: var(--rule); }
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.card-ticker {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: -0.01em;
+  color: var(--gold);
+  line-height: 1;
+}
+.card-time {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.card-rule {
+  height: 1px;
+  background: var(--hairline);
+  margin: 14px 0;
+}
+
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+}
+.card-row + .card-row {
+  border-top: 1px dashed var(--hairline);
+}
+.card-row .label {
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+}
+.card-row .value {
+  color: var(--text);
+  font-weight: 500;
+}
+.card-row .value.gold { color: var(--gold); }
+.card-row .value.ember { color: var(--ember); }
+.card-row .value.moss { color: var(--moss); }
+
+.card-catalysts {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.card-catalysts .cat-label {
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+  color: var(--dim);
+}
+.card-catalysts li {
+  list-style: none;
+  padding: 3px 0;
+  color: var(--gold-bright);
+}
+
+/* =============================================================================
+   CATALYSTS LIST
+   ============================================================================= */
+.cat-list {
+  list-style: none;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+}
+.cat-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.cat-row + .cat-row { border-top: 1px solid var(--hairline); }
+.cat-row .cat-ticker {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--gold);
+  font-weight: 400;
+}
+.cat-row .cat-desc {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.35;
+}
+.cat-row .cat-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.cat-row .cat-window {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--dim);
+  text-align: right;
+}
+
+/* Add catalyst form */
+.cat-form {
+  margin-top: 16px;
+  padding: 18px 18px 14px;
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 600px) {
+  .cat-form {
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 14px;
+  }
+  .cat-form .full { grid-column: 1 / -1; }
+}
+.field-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.field-input {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--hairline);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 10px 12px;
+  transition: border-color 180ms ease;
+}
+.field-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.field-input::placeholder { color: var(--dim); }
+
+/* =============================================================================
+   HISTORY VIEWER
+   ============================================================================= */
+.history-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.history-controls .field-input { flex: 1; }
+
+.history-block {
+  border: 1px solid var(--hairline);
+  background: var(--surface);
+  margin-bottom: 14px;
+}
+.history-block-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.history-block-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--gold);
+}
+.history-block-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+}
+.history-table th,
+.history-table td {
+  text-align: left;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.history-table th {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.history-table td { color: var(--text); }
+.history-table tr:last-child td { border-bottom: none; }
+.history-table .pass { color: var(--moss); }
+.history-table .fail { color: var(--ember); }
+.history-table .num { text-align: right; }
+
+/* =============================================================================
+   STATES
+   ============================================================================= */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  border: 1px dashed var(--hairline);
+  background: var(--surface);
+}
+.empty .icon {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 38px;
+  color: var(--dim);
+  margin-bottom: 10px;
+  line-height: 1;
+}
+.empty .text {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border: 1px solid var(--hairline);
+  height: 140px;
+  margin-bottom: 14px;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* =============================================================================
+   TOAST
+   ============================================================================= */
+.toast-host {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  color: var(--text);
+  padding: 11px 16px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  max-width: 88vw;
+  box-shadow: var(--shadow-1);
+  animation: slide-up 240ms cubic-bezier(.2,.8,.2,1);
+}
+.toast.error { border-color: var(--ember); color: var(--ember); }
+.toast.ok    { border-color: var(--gold); color: var(--gold-bright); }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================================================
+   FOOTER
+   ============================================================================= */
+footer {
+  margin-top: 60px;
+  padding-top: 22px;
+  border-top: 1px solid var(--hairline);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dim);
+  text-align: center;
+}
+
+/* =============================================================================
+   ENTRANCE
+   ============================================================================= */
+.fade-in {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: rise 600ms cubic-bezier(.2,.7,.2,1) forwards;
+}
+.fade-in:nth-child(1) { animation-delay: 0ms; }
+.fade-in:nth-child(2) { animation-delay: 60ms; }
+.fade-in:nth-child(3) { animation-delay: 120ms; }
+.fade-in:nth-child(4) { animation-delay: 180ms; }
+.fade-in:nth-child(5) { animation-delay: 240ms; }
+@keyframes rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- =========================================================
+       HEADER
+       ========================================================= -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark">El <em>Arquitecto</em></div>
+      <div class="brand-sub">v 1.0 · local</div>
+    </div>
+    <p class="tagline">
+      Sé temeroso cuando otros sean codiciosos. Sé codicioso cuando otros sean temerosos.
+      <cite>— W. Buffett</cite>
+    </p>
+    <div id="status-pill" class="status-pill">
+      <span class="dot"></span>
+      <span class="text">Conectando…</span>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       VITALS
+       ========================================================= -->
+  <section class="vitals" id="vitals">
+    <div class="vital">
+      <div class="vital-label">Universo</div>
+      <div class="vital-value mono" id="v-universe">—</div>
+      <div class="vital-sub" id="v-universe-sub">tickers monitorizados</div>
+    </div>
+    <div class="vital">
+      <div class="vital-label">Último escaneo</div>
+      <div class="vital-value mono" id="v-last">—</div>
+      <div class="vital-sub" id="v-last-sub">UTC</div>
+    </div>
+    <div class="vital">
+      <div class="vital-label">Procesados</div>
+      <div class="vital-value mono" id="v-processed">—</div>
+      <div class="vital-sub">en último ciclo</div>
+    </div>
+    <div class="vital">
+      <div class="vital-label">Oportunidades</div>
+      <div class="vital-value mono accent" id="v-opps">—</div>
+      <div class="vital-sub">en último ciclo</div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       ACTIONS
+       ========================================================= -->
+  <div class="actions">
+    <button class="btn" id="scan-btn">Disparar escaneo</button>
+    <button class="btn ghost" id="refresh-btn">Refrescar</button>
+    <span class="action-hint" id="scan-hint">Próximo escaneo periódico en —</span>
+  </div>
+
+  <!-- =========================================================
+       OPPORTUNITIES
+       ========================================================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Oportunidades <em>de oro</em></h2>
+      <span class="section-count" id="opps-count">—</span>
+    </div>
+    <div class="section-rule"></div>
+    <div id="opps-list">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       CATALYSTS
+       ========================================================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title"><em>Catalizadores</em> temporales</h2>
+      <span class="section-count" id="cats-count">—</span>
+    </div>
+    <div class="section-rule"></div>
+    <div id="cats-list"></div>
+    <details class="cat-form-toggle" style="margin-top: 18px;">
+      <summary style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); cursor: pointer; padding: 4px 0;">
+        + Añadir catalizador
+      </summary>
+      <div class="cat-form">
+        <div>
+          <label class="field-label">Ticker</label>
+          <input class="field-input" id="cat-ticker" placeholder="AAPL" maxlength="10">
+        </div>
+        <div>
+          <label class="field-label">Fecha</label>
+          <input class="field-input" id="cat-date" type="date">
+        </div>
+        <div>
+          <label class="field-label">Ventana (días)</label>
+          <input class="field-input" id="cat-window" type="number" value="30" min="1" max="365">
+        </div>
+        <div class="full">
+          <label class="field-label">Descripción</label>
+          <input class="field-input" id="cat-desc" placeholder="Reporte regulatorio · presentación de producto · etc.">
+        </div>
+        <div class="full" style="display: flex; gap: 8px;">
+          <button class="btn" id="cat-add-btn">Guardar</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- =========================================================
+       HISTORY VIEWER
+       ========================================================= -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">Historial por <em>ticker</em></h2>
+    </div>
+    <div class="section-rule"></div>
+    <div class="history-controls">
+      <input class="field-input" id="hist-ticker" placeholder="Introduce un ticker (ej. AAPL)" maxlength="10">
+      <button class="btn ghost" id="hist-btn">Consultar</button>
+    </div>
+    <div id="hist-out"></div>
+  </section>
+
+  <footer>
+    Local · Soberano · Determinista
+  </footer>
+</div>
+
+<div class="toast-host" id="toasts"></div>
+
+<script>
+/* =============================================================================
+   API helpers
+   ============================================================================= */
+const API = {
+  status:      () => fetch("/api/status").then(j),
+  ops:         (n=50) => fetch(`/api/opportunities?limit=${n}`).then(j),
+  catalysts:   () => fetch("/api/catalysts").then(j),
+  addCat:      (body) => fetch("/api/catalysts", {
+                  method: "POST",
+                  headers: {"Content-Type": "application/json"},
+                  body: JSON.stringify(body)
+                }).then(j),
+  delCat:      (id) => fetch(`/api/catalysts/${id}`, {method: "DELETE"}).then(j),
+  triggerScan: () => fetch("/api/scan/trigger", {method: "POST"}).then(j),
+  history:     (t) => fetch(`/api/tickers/${encodeURIComponent(t)}/history`).then(j),
+};
+async function j(r){
+  if(!r.ok){
+    let detail = "HTTP " + r.status;
+    try { const b = await r.json(); detail = b.detail || JSON.stringify(b); } catch(_){}
+    throw new Error(detail);
+  }
+  return r.json();
+}
+
+/* =============================================================================
+   Toasts
+   ============================================================================= */
+function toast(text, kind="info", ttl=3000){
+  const host = document.getElementById("toasts");
+  const el = document.createElement("div");
+  el.className = "toast " + (kind === "error" ? "error" : kind === "ok" ? "ok" : "");
+  el.textContent = text;
+  host.appendChild(el);
+  setTimeout(() => el.remove(), ttl);
+}
+
+/* =============================================================================
+   Formatters
+   ============================================================================= */
+const fmtPct = v => v == null ? "—" : (v * 100).toFixed(1) + "%";
+const fmtNum = (v, d=2) => v == null ? "—" : Number(v).toFixed(d);
+const fmtRsi = v => v == null ? "—" : Number(v).toFixed(2);
+function fmtTime(iso){
+  if(!iso) return "—";
+  const d = new Date(iso);
+  if(isNaN(d)) return iso;
+  const hh = String(d.getUTCHours()).padStart(2, "0");
+  const mm = String(d.getUTCMinutes()).padStart(2, "0");
+  const day = d.toISOString().slice(0,10);
+  return `${day} ${hh}:${mm}`;
+}
+function fmtDuration(s){
+  if(s == null) return "—";
+  if(s < 1) return (s*1000).toFixed(0) + "ms";
+  if(s < 60) return s.toFixed(1) + "s";
+  const m = Math.floor(s/60);
+  return `${m}m ${(s%60).toFixed(0)}s`;
+}
+function fmtNextScan(lastIso, intervalS){
+  if(!lastIso) return "—";
+  const next = new Date(lastIso).getTime() + intervalS*1000;
+  const now = Date.now();
+  const remaining = Math.max(0, Math.round((next - now)/1000));
+  if(remaining === 0) return "inminente";
+  if(remaining < 60) return remaining + "s";
+  const m = Math.floor(remaining/60);
+  const s = remaining%60;
+  return `${m}m ${s}s`;
+}
+
+/* =============================================================================
+   Status + Vitals
+   ============================================================================= */
+let lastStatus = null;
+
+async function refreshStatus(){
+  try {
+    const s = await API.status();
+    lastStatus = s;
+    renderStatus(s);
+  } catch(err){
+    setPillError(err.message);
+  }
+}
+
+function renderStatus(s){
+  const sc = s.scanner;
+  // Pill
+  const pill = document.getElementById("status-pill");
+  pill.classList.remove("scanning", "error");
+  const text = pill.querySelector(".text");
+  if(sc.last_error){
+    pill.classList.add("error");
+    text.textContent = "Error";
+  } else if(sc.is_running){
+    pill.classList.add("scanning");
+    text.textContent = "Escaneando";
+  } else {
+    text.textContent = "Activo";
+  }
+
+  // Vitals
+  document.getElementById("v-universe").textContent = sc.universe_size;
+  document.getElementById("v-universe-sub").textContent = "tickers monitorizados";
+  document.getElementById("v-last").textContent = fmtTime(sc.last_completed_at);
+  document.getElementById("v-last-sub").textContent = sc.last_duration_s != null
+    ? `${fmtDuration(sc.last_duration_s)} · UTC`
+    : "UTC";
+  document.getElementById("v-processed").textContent = sc.last_processed_count ?? "—";
+  document.getElementById("v-opps").textContent = sc.last_opportunities_count ?? "—";
+
+  // Scan hint
+  document.getElementById("scan-hint").textContent =
+    "Próximo escaneo periódico en " + fmtNextScan(sc.last_completed_at, s.config.scan_interval_seconds);
+
+  // Scan button
+  document.getElementById("scan-btn").disabled = sc.is_running;
+}
+
+function setPillError(msg){
+  const pill = document.getElementById("status-pill");
+  pill.classList.remove("scanning");
+  pill.classList.add("error");
+  pill.querySelector(".text").textContent = "Sin conexión";
+}
+
+/* =============================================================================
+   Opportunities
+   ============================================================================= */
+async function refreshOps(){
+  try {
+    const ops = await API.ops(50);
+    renderOps(ops);
+  } catch(err) {
+    document.getElementById("opps-list").innerHTML =
+      `<div class="empty"><div class="icon">!</div><div class="text">Error: ${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+function renderOps(ops){
+  document.getElementById("opps-count").textContent =
+    ops.length + (ops.length === 1 ? " entrada" : " entradas");
+  const host = document.getElementById("opps-list");
+  if(!ops.length){
+    host.innerHTML = `
+      <div class="empty">
+        <div class="icon">∅</div>
+        <div class="text">Sin oportunidades registradas. El silencio es el estado por defecto.</div>
+      </div>`;
+    return;
+  }
+  host.innerHTML = ops.map((o, i) => opCardHtml(o, i)).join("");
+}
+
+function opCardHtml(o, i){
+  return `
+    <article class="card fade-in" style="animation-delay:${Math.min(i*40, 240)}ms">
+      <div class="card-head">
+        <div class="card-ticker">${escapeHtml(o.ticker)}</div>
+        <div class="card-time">${escapeHtml(fmtTime(o.detected_at))}</div>
+      </div>
+      <div class="card-rule"></div>
+      <div class="card-row">
+        <span class="label">Margen bruto</span>
+        <span class="value gold">${fmtPct(o.gross_margin)}</span>
+      </div>
+      <div class="card-row">
+        <span class="label">Descuento PER</span>
+        <span class="value gold">${fmtPct(o.pe_discount)}</span>
+      </div>
+      <div class="card-row">
+        <span class="label">RSI</span>
+        <span class="value ${o.rsi < 30 ? 'gold' : ''}">${fmtRsi(o.rsi)}</span>
+      </div>
+      <div class="card-row">
+        <span class="label">Cierre</span>
+        <span class="value">${fmtNum(o.last_close)}</span>
+      </div>
+      <div class="card-row">
+        <span class="label">MA200</span>
+        <span class="value">${fmtNum(o.ma200)}</span>
+      </div>
+      <div class="card-row">
+        <span class="label">Bajo MA200</span>
+        <span class="value ${o.below_ma200 ? 'gold' : 'ember'}">${o.below_ma200 ? '✓ sí' : '✗ no'}</span>
+      </div>
+    </article>`;
+}
+
+/* =============================================================================
+   Catalysts
+   ============================================================================= */
+async function refreshCats(){
+  try {
+    const cs = await API.catalysts();
+    renderCats(cs);
+  } catch(err) {
+    toast("Error cargando catalizadores: " + err.message, "error");
+  }
+}
+
+function renderCats(cs){
+  document.getElementById("cats-count").textContent =
+    cs.length + (cs.length === 1 ? " activo" : " activos");
+  const host = document.getElementById("cats-list");
+  if(!cs.length){
+    host.innerHTML = `
+      <div class="empty">
+        <div class="icon">⌛</div>
+        <div class="text">Sin catalizadores registrados.</div>
+      </div>`;
+    return;
+  }
+  host.innerHTML = `<ul class="cat-list">${cs.map(catRowHtml).join("")}</ul>`;
+  host.querySelectorAll("[data-del]").forEach(b => {
+    b.addEventListener("click", () => deleteCat(b.dataset.del));
+  });
+}
+
+function catRowHtml(c){
+  return `
+    <li class="cat-row">
+      <div class="cat-ticker">${escapeHtml(c.ticker)}</div>
+      <div class="cat-desc">${escapeHtml(c.description)}</div>
+      <div>
+        <div class="cat-date">${escapeHtml(c.event_date)}</div>
+        <div class="cat-window">±${c.sensitivity_window_days}d</div>
+      </div>
+      <button class="btn danger" data-del="${c.id}" title="Eliminar">eliminar</button>
+    </li>`;
+}
+
+async function addCat(){
+  const ticker = document.getElementById("cat-ticker").value.trim().toUpperCase();
+  const date   = document.getElementById("cat-date").value;
+  const window = parseInt(document.getElementById("cat-window").value || "30", 10);
+  const desc   = document.getElementById("cat-desc").value.trim();
+  if(!ticker || !date || !desc){
+    toast("Completa ticker, fecha y descripción", "error");
+    return;
+  }
+  try {
+    await API.addCat({
+      ticker, event_date: date,
+      description: desc,
+      sensitivity_window_days: window
+    });
+    toast("Catalizador guardado", "ok");
+    document.getElementById("cat-ticker").value = "";
+    document.getElementById("cat-date").value = "";
+    document.getElementById("cat-desc").value = "";
+    document.getElementById("cat-window").value = "30";
+    refreshCats();
+  } catch(err) {
+    toast("Error: " + err.message, "error");
+  }
+}
+
+async function deleteCat(id){
+  if(!confirm("¿Eliminar este catalizador?")) return;
+  try {
+    await API.delCat(id);
+    toast("Catalizador eliminado", "ok");
+    refreshCats();
+  } catch(err) {
+    toast("Error: " + err.message, "error");
+  }
+}
+
+/* =============================================================================
+   History viewer
+   ============================================================================= */
+async function loadHistory(){
+  const t = document.getElementById("hist-ticker").value.trim().toUpperCase();
+  if(!t) return;
+  const out = document.getElementById("hist-out");
+  out.innerHTML = `<div class="skeleton" style="height:80px"></div>`;
+  try {
+    const h = await API.history(t);
+    out.innerHTML = renderHistory(h);
+  } catch(err) {
+    out.innerHTML = `<div class="empty"><div class="icon">!</div><div class="text">${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+function renderHistory(h){
+  const fund = h.fundamental || [];
+  const val  = h.valuation || [];
+  const tech = h.technical || [];
+  return `
+    ${histBlock("Fundamental", fund.length, fundTable(fund))}
+    ${histBlock("Valoración", val.length, valTable(val))}
+    ${histBlock("Técnico", tech.length, techTable(tech))}
+  `;
+}
+function histBlock(title, n, inner){
+  return `
+    <div class="history-block">
+      <div class="history-block-head">
+        <div class="history-block-title">${title}</div>
+        <div class="history-block-meta">${n} ${n === 1 ? 'snapshot' : 'snapshots'}</div>
+      </div>
+      ${n ? inner : `<div class="empty" style="border:none;background:transparent;padding:30px"><div class="text">Sin registros</div></div>`}
+    </div>`;
+}
+function fundTable(rows){
+  return `<table class="history-table"><thead><tr>
+    <th>Captura (UTC)</th>
+    <th class="num">Margen</th>
+    <th>EPS+</th>
+    <th>Margen✓</th>
+    <th>Recompra✓</th>
+    <th>Divid.</th>
+    <th>FCF+</th>
+    <th>FCF≥deuda</th>
+  </tr></thead><tbody>
+    ${rows.map(r => `<tr>
+      <td>${fmtTime(r.captured_at)}</td>
+      <td class="num">${r.gross_margin == null ? "—" : (r.gross_margin*100).toFixed(2)+"%"}</td>
+      <td class="${r.eps_trend_pos ? 'pass' : 'fail'}">${r.eps_trend_pos ? '✓' : '✗'}</td>
+      <td class="${r.margin_passes ? 'pass' : 'fail'}">${r.margin_passes ? '✓' : '✗'}</td>
+      <td class="${r.shares_decrease ? 'pass' : 'fail'}">${r.shares_decrease ? '✓' : '✗'}</td>
+      <td class="${r.dividend_paid && r.dividend_no_cut ? 'pass' : 'fail'}">${r.dividend_paid && r.dividend_no_cut ? '✓' : '✗'}</td>
+      <td class="${r.fcf_pos ? 'pass' : 'fail'}">${r.fcf_pos ? '✓' : '✗'}</td>
+      <td class="${r.fcf_covers_debt ? 'pass' : 'fail'}">${r.fcf_covers_debt ? '✓' : '✗'}</td>
+    </tr>`).join("")}
+  </tbody></table>`;
+}
+function valTable(rows){
+  return `<table class="history-table"><thead><tr>
+    <th>Captura</th>
+    <th class="num">PER actual</th>
+    <th class="num">PER hist.</th>
+    <th class="num">Descuento</th>
+    <th>Pasa</th>
+  </tr></thead><tbody>
+    ${rows.map(r => `<tr>
+      <td>${fmtTime(r.captured_at)}</td>
+      <td class="num">${r.current_pe == null ? "—" : Number(r.current_pe).toFixed(2)}</td>
+      <td class="num">${r.historical_pe == null ? "—" : Number(r.historical_pe).toFixed(2)}</td>
+      <td class="num">${r.pe_discount == null ? "—" : (r.pe_discount*100).toFixed(2)+"%"}</td>
+      <td class="${r.discount_passes ? 'pass' : 'fail'}">${r.discount_passes ? '✓' : '✗'}</td>
+    </tr>`).join("")}
+  </tbody></table>`;
+}
+function techTable(rows){
+  return `<table class="history-table"><thead><tr>
+    <th>Captura</th>
+    <th class="num">Cierre</th>
+    <th class="num">MA200</th>
+    <th>Bajo MA</th>
+    <th class="num">RSI</th>
+    <th>Sobreventa</th>
+  </tr></thead><tbody>
+    ${rows.map(r => `<tr>
+      <td>${fmtTime(r.captured_at)}</td>
+      <td class="num">${fmtNum(r.last_close)}</td>
+      <td class="num">${fmtNum(r.ma200)}</td>
+      <td class="${r.below_ma200 ? 'pass' : 'fail'}">${r.below_ma200 ? '✓' : '✗'}</td>
+      <td class="num">${fmtRsi(r.rsi)}</td>
+      <td class="${r.rsi_oversold ? 'pass' : 'fail'}">${r.rsi_oversold ? '✓' : '✗'}</td>
+    </tr>`).join("")}
+  </tbody></table>`;
+}
+
+/* =============================================================================
+   Manual scan
+   ============================================================================= */
+async function triggerScan(){
+  const btn = document.getElementById("scan-btn");
+  btn.disabled = true;
+  try {
+    await API.triggerScan();
+    toast("Escaneo iniciado en background", "ok");
+    // Polling más agresivo durante el escaneo
+    const t0 = Date.now();
+    const poll = setInterval(async () => {
+      await refreshStatus();
+      const running = lastStatus?.scanner?.is_running;
+      if(!running || Date.now() - t0 > 120000){
+        clearInterval(poll);
+        await refreshOps();
+        toast("Escaneo finalizado", "ok");
+      }
+    }, 2500);
+  } catch(err) {
+    btn.disabled = false;
+    toast("Error: " + err.message, "error");
+  }
+}
+
+/* =============================================================================
+   Utilities
+   ============================================================================= */
+function escapeHtml(s){
+  if(s == null) return "";
+  return String(s)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+/* =============================================================================
+   Boot
+   ============================================================================= */
+document.getElementById("scan-btn").addEventListener("click", triggerScan);
+document.getElementById("refresh-btn").addEventListener("click", async () => {
+  await Promise.all([refreshStatus(), refreshOps(), refreshCats()]);
+  toast("Actualizado", "ok");
+});
+document.getElementById("cat-add-btn").addEventListener("click", addCat);
+document.getElementById("hist-btn").addEventListener("click", loadHistory);
+document.getElementById("hist-ticker").addEventListener("keydown", e => {
+  if(e.key === "Enter") loadHistory();
+});
+
+(async function init(){
+  await Promise.all([refreshStatus(), refreshOps(), refreshCats()]);
+  // Polling pasivo cada 30s para mantener el reloj de "próximo escaneo" fresco
+  setInterval(refreshStatus, 30_000);
+})();
+</script>
+</body>
+</html>

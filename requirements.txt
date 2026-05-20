@@ -1,0 +1,26 @@
+# =============================================================================
+#  Arquitecto Financiero Supremo - Dependencias
+#  Versiones fijadas para reproducibilidad determinista.
+# =============================================================================
+
+# --- Datos de mercado ---
+yfinance==0.2.55          # Wrapper sobre Yahoo Finance (uso de hilos + asyncio.to_thread)
+pandas==2.2.3             # Manipulación vectorizada de series temporales
+numpy==2.1.3              # Cálculos numéricos (RSI, SMA, etc.)
+
+# --- Asincronía y red ---
+aiohttp==3.11.10          # Cliente HTTP asíncrono (Telegram, fetches paralelos)
+aiosqlite==0.20.0         # Driver SQLite asíncrono
+tenacity==9.0.0           # Retries con backoff exponencial declarativo
+
+# --- Configuración y logging ---
+python-dotenv==1.0.1      # Carga variables de entorno desde .env
+pydantic==2.9.2           # Validación estricta de configuración
+pydantic-settings==2.6.1  # Settings basados en env vars
+
+# --- Utilidades ---
+python-dateutil==2.9.0    # Manejo robusto de fechas (catalizadores)
+
+# --- Modo web (opcional, solo si usas web_runner.py) ---
+fastapi==0.115.5          # Framework HTTP asíncrono
+uvicorn[standard]==0.32.1 # Servidor ASGI
